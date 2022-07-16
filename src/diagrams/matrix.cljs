@@ -7,6 +7,7 @@
 (defn new-matrix [w h]
   (vec (map #(new-row w) (range h))))
 
+; TODO: Fix indexing
 (defn get-elem [mat x y]
   (get-in mat [x y]))
 
@@ -43,3 +44,25 @@
   (let [col   (get-col mat x)
         trues ((group-by true? col) true)]
     (count trues)))
+
+(defn get-neighbors [mat x y default-val]
+  [(get-in mat [(+ x 1) y      ] default-val)
+   (get-in mat [(- x 1) y      ] default-val)
+   (get-in mat [x       (+ y 1)] default-val)
+   (get-in mat [x       (- y 1)] default-val)])
+
+; TODO: Destructure args [x y] [w h]
+(defn slice-chunk [mat x y w h]
+  (->> mat
+       (drop y)
+       (take h)
+       (map #(->> %
+                  (drop x)
+                  (take w)
+                  (into [])))
+       (into [])))
+
+(defn has-pattern? [mat x y pattern]
+  (let [[w h] (get-dim pattern)
+        chunk (slice-chunk mat x y w h)]
+    (= pattern chunk)))
