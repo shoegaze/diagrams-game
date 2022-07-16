@@ -7,6 +7,7 @@
             [diagrams.ui.row :refer (row-component)]))
 
 
+; TODO: Get from game
 (defonce n 8)
 (defonce walls (r/atom (new-matrix n n)))
 (defonce markers (r/atom (new-matrix n n)))
