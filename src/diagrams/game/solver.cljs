@@ -1,5 +1,5 @@
 (ns diagrams.game.solver
-  (:require [diagrams.matrix :refer (h-count v-count get-dim)]))
+  (:require [diagrams.matrix :as mat]))
 
 
 (defn- valid-forms? [game walls]
@@ -10,13 +10,13 @@
 (defn- walls-satisfied? [game walls]
   (let [h-hints (:h-hints game)
         v-hints (:v-hints game)
-        hc      (map-indexed #(v-count walls %) walls)
+        hc      (map-indexed #(mat/v-count walls %) walls)
         ; BUG: Below doesn't work if n != m
-        vc      (map-indexed #(h-count walls %) walls)]
+        vc      (map-indexed #(mat/h-count walls %) walls)]
     (and (= hc h-hints)
          (= vc v-hints))))
 
-(defn- safe-get-wall [walls x y]
+(defn- dead-ends-are-mobs [game walls]
   (get-in walls [x y] true))
 
 (defn- get-neighbors [mat x y default-val]
@@ -30,17 +30,18 @@
 
 (defn- deadends-are-mobs [game walls]
   (let [mask  (:mask game)
-        [w h] (get-dim mask)]
+        [w h] (mat/get-dim mask)]
     (every? true?
             (for [x (range w)
                   y (range h)
                   :let [mask-elem (get-in mask [x y])
                         ;wall      (get-in walls [x y])
-                        wall-neighbors (get-neighbors walls x y true)]]
+                        wall-neighbors (mat/get-neighbors walls x y true)]]
               (if (= mask-elem :mob)
                 (= (count (filter true? wall-neighbors)) 3)
                 true)))))
-;
+
+; Must be placed after dead-ends-are-mobs
 ;(defn- chest-in-room? [game walls]
 ;  false)
 
@@ -52,9 +53,10 @@
 
 (defn solved? [game walls]
   (and true
+       ;(valid-forms? game walls)
        (walls-satisfied? game walls)
-       (deadends-are-mobs game walls)
+       (dead-ends-are-mobs game walls)
        ;(chest-in-room? game walls)
        ;(paths-narrow? game walls)
-       ;(chest-in-room? game walls)
+       ;(paths-connected game walls)
        ))
