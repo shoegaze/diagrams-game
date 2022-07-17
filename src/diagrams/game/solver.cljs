@@ -17,18 +17,6 @@
          (= vc v-hints))))
 
 (defn- dead-ends-are-mobs [game walls]
-  (get-in walls [x y] true))
-
-(defn- get-neighbors [mat x y default-val]
-  [(get-in mat [(+ x 1) y      ] default-val)
-   (get-in mat [(- x 1) y      ] default-val)
-   (get-in mat [x       (+ y 1)] default-val)
-   (get-in mat [x       (- y 1)] default-val)])
-
-;(defn- matches-pattern? [game walls x y pattern]
-;  false)
-
-(defn- deadends-are-mobs [game walls]
   (let [mask  (:mask game)
         [w h] (mat/get-dim mask)]
     (every? true?
@@ -42,14 +30,20 @@
                 true)))))
 
 ; Must be placed after dead-ends-are-mobs
-;(defn- chest-in-room? [game walls]
+;(defn- chests-in-rooms? [game walls]
 ;  false)
 
 ;(defn- paths-narrow? [game walls]
 ;  ; Convolve 2x2 :empty
 ;  (let [pattern [[:empty :empty]
-;                 [:empty :empty]]]
-;    false))
+;                 [:empty :empty]]
+;        [w h]   (mat/get-dim game)]
+;    (for [x (range w)
+;          y (range h)]
+;      )))
+
+;(defn- paths-connected [game walls]
+;  false)
 
 (defn solved? [game walls]
   (and true
