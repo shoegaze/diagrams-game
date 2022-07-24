@@ -11,7 +11,6 @@
        (take h)
        (vec)))
 
-; TODO: Fix indexing
 (defn get-elem [mat x y]
   (get-in mat [y x]))
 
@@ -55,18 +54,21 @@
    (get-in mat [x       (+ y 1)] default)
    (get-in mat [x       (- y 1)] default)])
 
-; TODO: Destructure args [x y] [w h]
-(defn slice-chunk [mat [x y] [w h]]
-  (->> mat
-       (drop y)
-       (take h)
-       (map #(->> %
-                  (drop x)
-                  (take w)
-                  (into [])))
-       (into [])))
+(defn slice-chunk [mat [x y] [w h] default]
+  (->> (new-matrix w h default)
+       (map-indexed
+         (fn [y-local row]
+           (->> row
+                (map-indexed
+                  (fn [x-local _]
+                    (let [y' (+ y y-local)
+                          x' (+ x x-local)
+                          new-value (get-elem mat x' y')]
+                      new-value)))
+                (vec))))
+       (vec)))
 
-(defn has-pattern? [mat x y pattern]
+(defn is-pattern? [mat x y pattern]
   (let [dim   (get-dim pattern)
-        chunk (slice-chunk mat [x y] dim)]
+        chunk (slice-chunk mat [x y] dim nil)]
     (= pattern chunk)))
