@@ -2,13 +2,13 @@
 
 
 (defn- new-row [w default]
-  (->> (range w)
-       (map (constantly default))
+  (->> (repeat default)
+       (take w)
        (vec)))
 
 (defn new-matrix [w h default]
-  (->> (range h)
-       (map #(new-row w default))
+  (->> (repeat (new-row w default))
+       (take h)
        (vec)))
 
 ; TODO: Fix indexing
