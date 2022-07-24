@@ -1,11 +1,15 @@
 (ns diagrams.matrix)
 
 
-(defn- new-row [w]
-  (vec (map (constantly false) (range w))))
+(defn- new-row [w default]
+  (->> (range w)
+       (map (constantly default))
+       (vec)))
 
-(defn new-matrix [w h]
-  (vec (map #(new-row w) (range h))))
+(defn new-matrix [w h default]
+  (->> (range h)
+       (map #(new-row w default))
+       (vec)))
 
 ; TODO: Fix indexing
 (defn get-elem [mat x y]
@@ -14,9 +18,9 @@
 (defn set-elem [mat x y value]
   (assoc-in mat [x y] value))
 
-(defn flip-elem [mat x y]
+(defn update-elem [mat x y update-fn]
   (let [old-value (get-elem mat x y)
-        new-value (not old-value)]
+        new-value (update-fn old-value)]
     (set-elem mat x y new-value)))
 
 (defn get-dim [mat]
@@ -33,26 +37,26 @@
   (mat y))
 
 (defn get-col [mat x]
-  (map #(nth % x) mat))
+  (map #(% x) mat))
 
-(defn h-count [mat y]
-  (let [row   (get-row mat y)
-        trues ((group-by true? row) true)]
-    (count trues)))
+(defn h-count [mat y group-fn group]
+  (let [row (get-row mat y)
+        gs  (group-by group-fn row)]
+    (count (gs group))))
 
-(defn v-count [mat x]
-  (let [col   (get-col mat x)
-        trues ((group-by true? col) true)]
-    (count trues)))
+(defn v-count [mat x group-fn group]
+  (let [col (get-col mat x)
+        gs  (group-by group-fn col)]
+    (count (gs group))))
 
-(defn get-neighbors [mat x y default-val]
-  [(get-in mat [(+ x 1) y      ] default-val)
-   (get-in mat [(- x 1) y      ] default-val)
-   (get-in mat [x       (+ y 1)] default-val)
-   (get-in mat [x       (- y 1)] default-val)])
+(defn get-neighbors [mat x y default]
+  [(get-in mat [(+ x 1) y      ] default)
+   (get-in mat [(- x 1) y      ] default)
+   (get-in mat [x       (+ y 1)] default)
+   (get-in mat [x       (- y 1)] default)])
 
 ; TODO: Destructure args [x y] [w h]
-(defn slice-chunk [mat x y w h]
+(defn slice-chunk [mat [x y] [w h]]
   (->> mat
        (drop y)
        (take h)
@@ -63,6 +67,6 @@
        (into [])))
 
 (defn has-pattern? [mat x y pattern]
-  (let [[w h] (get-dim pattern)
-        chunk (slice-chunk mat x y w h)]
+  (let [dim   (get-dim pattern)
+        chunk (slice-chunk mat [x y] dim)]
     (= pattern chunk)))

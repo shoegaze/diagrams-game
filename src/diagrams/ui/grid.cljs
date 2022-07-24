@@ -9,8 +9,8 @@
 
 ; TODO: Get from game
 (defonce n 8)
-(defonce walls (r/atom (new-matrix n n)))
-(defonce markers (r/atom (new-matrix n n)))
+(defonce walls (r/atom (new-matrix n n false)))
+(defonce markers (r/atom (new-matrix n n false)))
 ;(defonce game-solved? (r/atom false))
 
 (defn grid-component [game]

@@ -1,7 +1,10 @@
 (ns diagrams.ui.cell
-  (:require [diagrams.matrix :refer (get-elem set-elem flip-elem)]
+  (:require [diagrams.matrix :refer (get-elem set-elem update-elem)]
             [diagrams.game.core :refer (is-occupied?)]))
 
+
+(defn flip-elem [mat x y]
+  (update-elem mat x y not))
 
 (defn- on-left-click [ev game walls markers x y]
   (when (not (is-occupied? game x y))

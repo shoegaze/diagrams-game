@@ -9,7 +9,7 @@
      (doall
        (for [y (range hint)
              :let [hint (v-hints y)]]
-         (let [hc (h-count @walls y)]
+         (let [hc (h-count @walls y true? true)]
            ^{:key y} [:h1
                       {:style
                        {:color (cond (< hc hint) :black
