@@ -32,8 +32,8 @@
                 true)))))
 
 ; Must be placed after dead-ends-are-mobs
-;(defn- chests-in-rooms? [game walls]
-;  false)
+(defn- chests-in-rooms? [game walls]
+  false)
 
 ;(defn- paths-narrow? [game walls]
 ;  ; Convolve 2x2 :empty
@@ -52,7 +52,7 @@
        ;(valid-forms? game walls)
        (walls-satisfied? game walls)
        (dead-ends-are-mobs game walls)
-       ;(chest-in-room? game walls)
+       (chests-in-room? game walls)
        ;(paths-narrow? game walls)
        ;(paths-connected game walls)
        ))
