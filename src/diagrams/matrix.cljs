@@ -13,10 +13,10 @@
 
 ; TODO: Fix indexing
 (defn get-elem [mat x y]
-  (get-in mat [x y]))
+  (get-in mat [y x]))
 
 (defn set-elem [mat x y value]
-  (assoc-in mat [x y] value))
+  (assoc-in mat [y x] value))
 
 (defn update-elem [mat x y update-fn]
   (let [old-value (get-elem mat x y)
