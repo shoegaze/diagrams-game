@@ -10,9 +10,11 @@
 (defn- walls-satisfied? [game walls]
   (let [h-hints (:h-hints game)
         v-hints (:v-hints game)
-        hc      (map-indexed #(mat/v-count walls %) walls)
+        hc      (map-indexed #(mat/v-count walls % true? true)
+                             walls)
         ; BUG: Below doesn't work if n != m
-        vc      (map-indexed #(mat/h-count walls %) walls)]
+        vc      (map-indexed #(mat/h-count walls % true? true)
+                             walls)]
     (and (= hc h-hints)
          (= vc v-hints))))
 
