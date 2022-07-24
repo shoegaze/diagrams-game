@@ -24,12 +24,12 @@
     (set-elem mat x y new-value)))
 
 (defn get-dim [mat]
-  (let [w (count mat)]
-   (if (zero? w)
+  (let [h (count mat)]
+   (if (zero? h)
     [0 0]
-    (let [h        (count (mat 0))
-          hs       (map count mat)
-          uniform? (every? #(= h %) hs)]
+    (let [w        (count (mat 0))
+          ws       (map count mat)
+          uniform? (every? #(= w %) ws)]
       (when uniform?
         [w h])))))
 
