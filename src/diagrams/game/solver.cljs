@@ -33,7 +33,24 @@
 
 ; Must be placed after dead-ends-are-mobs
 (defn- chests-in-rooms? [game walls]
-  false)
+  (let [[w h] (mat/get-dim walls)
+        wall-pattern [[false false false]
+                      [false false false]
+                      [false false false]]]
+    (every?
+      true?
+      (for [x (range w)
+            y (range h)]
+        (if (mat/is-pattern? walls x y wall-pattern)
+          (when (mat/has-elem?
+                  (mat/slice-chunk (:mask game) [x y] [3 3])
+                  :chest)
+            (let [h-walls (mat/slice-chunk walls [(- x 1) y] [5 3] true)
+                  v-walls (mat/slice-chunk walls [x (- y 1)] [3 5] true)
+                  h-count (mat/count-by h-walls true? true)
+                  v-count (mat/count-by v-walls true? true)]
+              (= (+ h-count v-count) 11)))
+        true)))))
 
 ;(defn- paths-narrow? [game walls]
 ;  ; Convolve 2x2 :empty
@@ -52,7 +69,7 @@
        ;(valid-forms? game walls)
        (walls-satisfied? game walls)
        (dead-ends-are-mobs game walls)
-       (chests-in-rooms? game walls)
+       ;(chests-in-rooms? game walls)
        ;(paths-narrow? game walls)
        ;(paths-connected game walls)
        ))

@@ -60,7 +60,6 @@
 (defn slice-chunk
   ([mat [x y] [w h] default]
    (->> (new-matrix w h default)
-  ([mat [x y] [w h] default]
         (map-indexed
           (fn [y-local row]
             (->> row
