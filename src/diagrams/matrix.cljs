@@ -75,7 +75,17 @@
   ([mat [x y] [w h]]
    (slice-chunk mat [x y] [w h] nil)))
 
-(defn is-pattern? [mat x y pattern]
-  (let [dim   (get-dim pattern)
-        chunk (slice-chunk mat [x y] dim nil)]
-    (= pattern chunk)))
+(defn count-elems
+  ([mat value group-fn]
+   (->> mat
+        (flatten)
+        (group-by group-fn)
+        (#(get % value))
+        (count)))
+  ([mat value]
+   (count-elems mat value identity)))
+
+;(defn has-pattern? [mat x y pattern]
+;  (let [dim   (get-dim pattern)
+;        chunk (slice-chunk mat [x y] dim nil)]
+;    (= pattern chunk)))
