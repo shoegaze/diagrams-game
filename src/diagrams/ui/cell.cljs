@@ -3,7 +3,7 @@
             [diagrams.game.core :refer (is-occupied?)]))
 
 
-(defn flip-elem [mat x y]
+(defn- flip-elem [mat x y]
   (update-elem mat x y not))
 
 (defn- on-left-click [ev game walls markers x y]
