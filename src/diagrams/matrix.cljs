@@ -6,10 +6,13 @@
        (take w)
        (vec)))
 
-(defn new-matrix [w h default]
-  (->> (repeat (new-row w default))
-       (take h)
-       (vec)))
+(defn new-matrix
+  ([w h default]
+   (->> (repeat (new-row w default))
+        (take h)
+        (vec)))
+  ([w h]
+   (new-matrix w h nil)))
 
 (defn get-elem [mat x y]
   (get-in mat [y x]))
@@ -54,19 +57,23 @@
    (get-in mat [x       (+ y 1)] default)
    (get-in mat [x       (- y 1)] default)])
 
-(defn slice-chunk [mat [x y] [w h] default]
-  (->> (new-matrix w h default)
-       (map-indexed
-         (fn [y-local row]
-           (->> row
-                (map-indexed
-                  (fn [x-local _]
-                    (let [y' (+ y y-local)
-                          x' (+ x x-local)
-                          new-value (get-elem mat x' y')]
-                      new-value)))
-                (vec))))
-       (vec)))
+(defn slice-chunk
+  ([mat [x y] [w h] default]
+   (->> (new-matrix w h default)
+  ([mat [x y] [w h] default]
+        (map-indexed
+          (fn [y-local row]
+            (->> row
+                 (map-indexed
+                   (fn [x-local _]
+                     (let [y' (+ y y-local)
+                           x' (+ x x-local)
+                           new-value (get-elem mat x' y')]
+                       new-value)))
+                 (vec))))
+        (vec)))
+  ([mat [x y] [w h]]
+   (slice-chunk mat [x y] [w h] nil)))
 
 (defn is-pattern? [mat x y pattern]
   (let [dim   (get-dim pattern)
