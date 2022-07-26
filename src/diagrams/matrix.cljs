@@ -14,8 +14,11 @@
   ([w h]
    (new-matrix w h nil)))
 
-(defn get-elem [mat x y]
-  (get-in mat [y x]))
+(defn get-elem
+  ([mat x y default]
+   (get-in mat [y x] default))
+  ([mat x y]
+   (get-elem mat x y nil)))
 
 (defn set-elem [mat x y value]
   (assoc-in mat [y x] value))
@@ -51,11 +54,12 @@
         gs  (group-by group-fn col)]
     (count (gs group))))
 
+; TODO: Fix indexing error
 (defn get-neighbors [mat x y default]
-  [(get-in mat [(+ x 1) y      ] default)
-   (get-in mat [(- x 1) y      ] default)
-   (get-in mat [x       (+ y 1)] default)
-   (get-in mat [x       (- y 1)] default)])
+  [(get-elem mat (+ x 1) y       default)
+   (get-elem mat (- x 1) y       default)
+   (get-elem mat x       (+ y 1) default)
+   (get-elem mat x       (- y 1) default)])
 
 (defn slice-chunk
   ([mat [x y] [w h] default]
