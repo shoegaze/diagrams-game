@@ -22,7 +22,7 @@ body {
 
 .win-banner {
     display: inline-block;
-    width: 500px;
+    width: 480px;
     height: 40px;
 
     position: relative;
@@ -48,7 +48,7 @@ body {
     top: 0;
     left: 0;
 
-    width: 500px;
+    width: 480px;
     height: 60px;
 
     display: flex;
@@ -61,7 +61,7 @@ body {
     left: -60px;
 
     width: 60px;
-    height: 500px;
+    height: 480px;
 
     display: flex;
     flex-direction: column;
@@ -80,8 +80,8 @@ body {
 
 .grid {
     background-color: red;
-    width: 500px;
-    height: 500px;
+    width: 480px;
+    height: 480px;
 
     display: flex;
     flex-direction: column;
@@ -112,4 +112,6 @@ body {
     position: relative;
     top: -64px;
     left: 0;
+
+    z-index: 1;
 }
