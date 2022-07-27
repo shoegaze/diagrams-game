@@ -14,8 +14,11 @@
   ([w h]
    (new-matrix w h nil)))
 
-(defn get-elem [mat x y]
-  (get-in mat [y x]))
+(defn get-elem
+  ([mat x y default]
+   (get-in mat [y x] default))
+  ([mat x y]
+   (get-elem mat x y nil)))
 
 (defn set-elem [mat x y value]
   (assoc-in mat [y x] value))
@@ -67,24 +70,23 @@
                    (fn [x-local _]
                      (let [y' (+ y y-local)
                            x' (+ x x-local)
-                           new-value (get-elem mat x' y')]
+                           new-value (get-elem mat x' y' default)]
                        new-value)))
                  (vec))))
         (vec)))
   ([mat [x y] [w h]]
    (slice-chunk mat [x y] [w h] nil)))
 
-(defn count-elems
-  ([mat value group-fn]
-   (->> mat
-        (flatten)
-        (group-by group-fn)
-        (#(get % value))
-        (count)))
-  ([mat value]
-   (count-elems mat value identity)))
+(defn count-elem [mat value]
+  (->> mat
+       (flatten)
+       (frequencies)
+       (#(get % value))))
 
-;(defn has-pattern? [mat x y pattern]
-;  (let [dim   (get-dim pattern)
-;        chunk (slice-chunk mat [x y] dim nil)]
-;    (= pattern chunk)))
+(defn has-elem? [mat value]
+  (> (count-elem mat value) 0))
+
+(defn has-pattern? [mat x y pattern]
+  (let [dim   (get-dim pattern)
+        chunk (slice-chunk mat [x y] dim nil)]
+    (= pattern chunk)))
