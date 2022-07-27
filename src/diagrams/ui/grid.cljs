@@ -19,8 +19,8 @@
     [h-hints-component game walls]
     [v-hints-component game walls]]
    [:div.grid
-    (for [x (range n)]
-      ^{:key x} [row-component game walls markers n x])]
+    (for [y (range n)]
+      ^{:key y} [row-component game walls markers n y])]
    [:h1.win-banner
     {:style
      {:visibility (if (solved? game @walls)

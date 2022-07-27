@@ -2,7 +2,7 @@
   (:require [diagrams.matrix :as mat]))
 
 
-(defn- is-mask-elem? [elem]
+(defn- mask-elem? [elem]
   (or (= elem :empty)
       (= elem :chest)
       (= elem :mob)))
@@ -15,7 +15,7 @@
          (= mask-h v-count))))
 
 (defn- valid-game-params? [mask h-hints v-hints]
-  (and (every? #(every? is-mask-elem? %) mask)
+  (and (every? #(every? mask-elem? %) mask)
        (sizes-match? mask h-hints v-hints)))
 
 (defn new-game [mask h-hints v-hints]
@@ -26,8 +26,9 @@
 
 (defn is-occupied? [game x y]
   (let [mask (:mask game)
-        elem (get-in mask [x y])]
+        elem (mat/get-elem mask x y)]
     (not= elem :empty)))
+
 
 (def test-game (new-game [[:empty :empty :empty :empty :empty :empty :empty :empty]
                           [:empty :empty :empty :empty :empty :empty :empty :mob  ]
