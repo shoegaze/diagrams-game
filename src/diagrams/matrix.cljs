@@ -54,11 +54,12 @@
         gs  (group-by group-fn col)]
     (count (gs group))))
 
+; TODO: Fix indexing error
 (defn get-neighbors [mat x y default]
-  [(get-in mat [(+ x 1) y      ] default)
-   (get-in mat [(- x 1) y      ] default)
-   (get-in mat [x       (+ y 1)] default)
-   (get-in mat [x       (- y 1)] default)])
+  [(get-elem mat (+ x 1) y       default)
+   (get-elem mat (- x 1) y       default)
+   (get-elem mat x       (+ y 1) default)
+   (get-elem mat x       (- y 1) default)])
 
 (defn slice-chunk
   ([mat [x y] [w h] default]
