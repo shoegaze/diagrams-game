@@ -36,9 +36,21 @@
                   (= 3))))
          (every? identity))))
 
+(defn- chest-room? [game walls x y]
+  (if-not (mat/has-elem?
+            (mat/slice-chunk (:mask game) [x y] [3 3])
+            :chest)
+    false
+    (let [h-walls (mat/slice-chunk walls [(- x 1) y] [5 3] true)
+          v-walls (mat/slice-chunk walls [x (- y 1)] [3 5] true)
+          h-count (mat/count-elem h-walls true)
+          v-count (mat/count-elem v-walls true)
+          sum     (+ h-count v-count)]
+      (= sum 11))))
+
 ; Must be placed after dead-ends-are-mobs
 (defn- chests-in-rooms? [game walls]
-  (let [mask  (:mask game)
+  (let [[w h] (mat/get-dim walls)
         [w h] (mat/get-dim walls)
         room-pattern [[false false false]
                       [false false false]
@@ -47,7 +59,7 @@
                  y (range h)]
              (if-not (mat/has-pattern? walls x y room-pattern)
                true
-               (if-not (mat/has-elem?
+               (chest-room? game walls x y)))
                        (mat/slice-chunk mask [x y] [3 3])
                        :chest)
                  false
