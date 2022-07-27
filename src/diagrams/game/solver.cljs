@@ -21,15 +21,20 @@
 (defn- dead-ends-are-mobs [game walls]
   (let [mask  (:mask game)
         [w h] (mat/get-dim mask)]
-    (every? true?
+    (->> (for [x (range w)
             (for [x (range w)
-                  y (range h)
-                  :let [mask-elem (get-in mask [x y])
+               y (range h)
+               :let [mask-elem (mat/get-elem mask x y)
                         ;wall      (get-in walls [x y])
-                        wall-neighbors (mat/get-neighbors walls x y true)]]
-              (if (= mask-elem :mob)
-                (= (count (filter true? wall-neighbors)) 3)
-                true)))))
+                     wall-neighbors (mat/get-neighbors walls x y true)]]
+           (if-not (= mask-elem :mob)
+             true
+             ; Ensure there are exactly 3 neighboring walls
+             (->> wall-neighbors
+                  (frequencies)
+                  (#(get % true))
+                  (= 3))))
+         (every? identity))))
 
 ; Must be placed after dead-ends-are-mobs
 (defn- chests-in-rooms? [game walls]
