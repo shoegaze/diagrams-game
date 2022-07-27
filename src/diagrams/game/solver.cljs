@@ -48,8 +48,8 @@
 
 ; Must be placed after dead-ends-are-mobs
 (defn- chests-in-rooms? [game walls]
-  (let [[w h] (mat/get-dim walls)
-        room-pattern [[false false false]
+  (let [[w h]        (mat/get-dim walls)
+        room-pattern (mat/new-matrix 3 3 :empty)]
                       [false false false]
                       [false false false]]]
       (->> (for [x (range w)
