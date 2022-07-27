@@ -22,10 +22,8 @@
   (let [mask  (:mask game)
         [w h] (mat/get-dim mask)]
     (->> (for [x (range w)
-            (for [x (range w)
                y (range h)
-               :let [mask-elem (mat/get-elem mask x y)
-                        ;wall      (get-in walls [x y])
+               :let [mask-elem      (mat/get-elem mask x y)
                      wall-neighbors (mat/get-neighbors walls x y true)]]
            (if-not (= mask-elem :mob)
              true
@@ -51,7 +49,6 @@
 ; Must be placed after dead-ends-are-mobs
 (defn- chests-in-rooms? [game walls]
   (let [[w h] (mat/get-dim walls)
-        [w h] (mat/get-dim walls)
         room-pattern [[false false false]
                       [false false false]
                       [false false false]]]
@@ -60,15 +57,6 @@
              (if-not (mat/has-pattern? walls x y room-pattern)
                true
                (chest-room? game walls x y)))
-                       (mat/slice-chunk mask [x y] [3 3])
-                       :chest)
-                 false
-                 (let [h-walls (mat/slice-chunk walls [(- x 1) y] [5 3] true)
-                       v-walls (mat/slice-chunk walls [x (- y 1)] [3 5] true)
-                       h-count (mat/count-elem h-walls true)
-                       v-count (mat/count-elem v-walls true)
-                       sum     (+ h-count v-count)]
-                   (= sum 11)))))
            (every? identity))))
 
 ;(defn- paths-narrow? [game walls]
