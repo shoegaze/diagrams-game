@@ -50,8 +50,6 @@
 (defn- chests-in-rooms? [game walls]
   (let [[w h]        (mat/get-dim walls)
         room-pattern (mat/new-matrix 3 3 :empty)]
-                      [false false false]
-                      [false false false]]]
       (->> (for [x (range w)
                  y (range h)]
              (if-not (mat/has-pattern? walls x y room-pattern)
@@ -59,14 +57,18 @@
                (chest-room? game walls x y)))
            (every? identity))))
 
-;(defn- paths-narrow? [game walls]
-;  ; Convolve 2x2 :empty
-;  (let [pattern [[:empty :empty]
-;                 [:empty :empty]]
-;        [w h]   (mat/get-dim game)]
-;    (for [x (range w)
-;          y (range h)]
-;      )))
+; TODO
+(defn- fill-chest-rooms [game walls]
+  walls)
+
+(defn- paths-narrow? [game walls]
+  ; Convolve walls with 2x2 false matrix
+  (let [[w h]        (mat/get-dim (:mask game))
+        wall-pattern (mat/new-matrix 2 2 false)]
+    (->> (for [x (range w)
+               y (range h)]
+           (mat/has-pattern? walls x y wall-pattern))
+         (every? not))))
 
 ;(defn- paths-connected [game walls]
 ;  false)
@@ -74,9 +76,10 @@
 (defn solved? [game walls]
   (and true
        ;(valid-forms? game walls)
-       (walls-satisfied? game walls)
-       (dead-ends-are-mobs game walls)
-       (chests-in-rooms? game walls)
-       ;(paths-narrow? game walls)
-       ;(paths-connected game walls)
-       ))
+       ;(walls-satisfied? game walls)
+       ;(dead-ends-are-mobs game walls)
+       ;(chests-in-rooms? game walls)
+       (let [walls (fill-chest-rooms game walls)]
+         (paths-narrow? game walls)
+       ;  ;(paths-connected game walls)
+       )))
