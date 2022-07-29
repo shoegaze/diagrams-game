@@ -36,11 +36,11 @@
 
 (defn- chest-room? [game walls x y]
   (if-not (mat/has-elem?
-            (mat/slice-chunk (:mask game) [x y] [3 3])
+            (mat/get-chunk (:mask game) [x y] [3 3])
             :chest)
     false
-    (let [h-walls (mat/slice-chunk walls [(- x 1) y] [5 3] true)
-          v-walls (mat/slice-chunk walls [x (- y 1)] [3 5] true)
+    (let [h-walls (mat/get-chunk walls [(- x 1) y] [5 3] true)
+          v-walls (mat/get-chunk walls [x (- y 1)] [3 5] true)
           h-count (mat/count-elem h-walls true)
           v-count (mat/count-elem v-walls true)
           sum     (+ h-count v-count)]
