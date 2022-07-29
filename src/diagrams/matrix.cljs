@@ -99,7 +99,7 @@
   (->> mat
        (flatten)
        (frequencies)
-       (#(get % value))))
+       (#(get % value 0))))
 
 (defn has-elem? [mat value]
   (> (count-elem mat value) 0))

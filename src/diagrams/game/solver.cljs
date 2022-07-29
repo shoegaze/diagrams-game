@@ -57,9 +57,16 @@
                (chest-room? game walls x y)))
            (every? identity))))
 
-; TODO
 (defn- fill-chest-rooms [game walls]
-  walls)
+  (let [walls' (atom walls)
+        mask   (:mask game)
+        [w h]  (mat/get-dim mask)
+        wall-pattern (mat/new-matrix 3 3 true)]
+    (doseq [y (range h)
+            x (range w)
+            :when (chest-room? game @walls' x y)]
+      (swap! walls' mat/set-chunk x y wall-pattern))
+    @walls'))
 
 (defn- paths-narrow? [game walls]
   ; Convolve walls with 2x2 false matrix
