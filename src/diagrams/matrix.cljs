@@ -61,7 +61,7 @@
    (get-elem mat x       (+ y 1) default)
    (get-elem mat x       (- y 1) default)])
 
-(defn slice-chunk
+(defn get-chunk
   ([mat [x y] [w h] default]
    (->> (new-matrix w h default)
         (map-indexed
@@ -76,18 +76,35 @@
                  (vec))))
         (vec)))
   ([mat [x y] [w h]]
-   (slice-chunk mat [x y] [w h] nil)))
+   (get-chunk mat [x y] [w h] nil)))
+
+(defn set-chunk [mat x y chk]
+  (let [mat' (atom mat)
+        [w-chk h-chk] (get-dim chk)]
+    (doseq [y-chk (range h-chk)
+          x-chk (range w-chk)
+          :let [x-mat         (+ x x-chk)
+                y-mat         (+ y y-chk)
+                chk-elem      (get-elem chk x-chk y-chk)
+                [w-mat h-mat] (get-dim mat)]
+          :when (and (< -1 x-mat w-mat)
+                     (< -1 y-mat h-mat))]
+      (swap! mat' diagrams.matrix/set-elem
+             x-mat
+             y-mat
+             chk-elem))
+    @mat'))
 
 (defn count-elem [mat value]
   (->> mat
        (flatten)
        (frequencies)
-       (#(get % value))))
+       (#(get % value 0))))
 
 (defn has-elem? [mat value]
   (> (count-elem mat value) 0))
 
 (defn has-pattern? [mat x y pattern]
   (let [dim   (get-dim pattern)
-        chunk (slice-chunk mat [x y] dim nil)]
+        chunk (get-chunk mat [x y] dim nil)]
     (= pattern chunk)))
