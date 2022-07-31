@@ -1,3 +1,8 @@
+/* TODO: Copy this into specific class rules */
+* {
+    user-select: none;
+}
+
 html,
 body {
     margin: 0;
