@@ -117,11 +117,11 @@
 
 (defn solved? [game walls]
   (and true
-       ;(valid-forms? game walls)
-       (walls-satisfied? game walls)
-       (dead-ends-are-mobs? game walls)
-       (chests-in-rooms? game walls)
-       (let [walls (fill-chest-rooms game walls)]
-         (paths-narrow? game walls)
-         (paths-connected? game walls)
+     ;(valid-forms? game walls)
+     (walls-satisfied? game walls)
+     (dead-ends-are-mobs? game walls)
+     (chests-in-rooms? game walls)
+     (let [walls (fill-chest-rooms game walls)]
+       (paths-narrow? game walls))
+     (paths-connected? game walls)))
        )))
