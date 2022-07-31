@@ -108,3 +108,13 @@
   (let [dim   (get-dim pattern)
         chunk (get-chunk mat [x y] dim nil)]
     (= pattern chunk)))
+
+(defn to-coords [mat]
+  (->> mat
+       (map-indexed 
+         (fn [y row]
+           (->> row
+                (map-indexed
+                  (fn [x _] [x y]))
+                (into []))))
+       (into [])))
