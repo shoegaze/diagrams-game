@@ -18,7 +18,7 @@
     (and (= hc h-hints)
          (= vc v-hints))))
 
-(defn- dead-ends-are-mobs [game walls]
+(defn- dead-ends-are-mobs? [game walls]
   (let [mask  (:mask game)
         [w h] (mat/get-dim mask)]
     (->> (for [x (range w)
@@ -118,10 +118,10 @@
 (defn solved? [game walls]
   (and true
        ;(valid-forms? game walls)
-       ;(walls-satisfied? game walls)
-       ;(dead-ends-are-mobs game walls)
-       ;(chests-in-rooms? game walls)
+       (walls-satisfied? game walls)
+       (dead-ends-are-mobs? game walls)
+       (chests-in-rooms? game walls)
        (let [walls (fill-chest-rooms game walls)]
-         ;(paths-narrow? game walls)
+         (paths-narrow? game walls)
          (paths-connected? game walls)
        )))
