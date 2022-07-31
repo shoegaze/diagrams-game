@@ -87,9 +87,12 @@
    (let [neighbors (->> coords
                         (filter #(are-neighbors? root %))
                         (filter #(nil? (get path %))))
+         ; Adds neighbors to path
          path' (reduce conj path neighbors)]
+     ; End condition: there are no free neighbors left
      (if (empty? neighbors)
        path'
+       ; Build path again from neighbors
        (reduce (fn [path root]
                  (clojure.set/union path (build-path root coords path)))
                path'
@@ -99,6 +102,8 @@
    (build-path root coords #{root})))
 
 (defn- paths-connected? [_game walls]
+  ; Convert wall elements to coordinate values
+  ;  and filter out non-empty walls
   (let [empty-coords (filter
                        (fn [[x y]] (false? (mat/get-elem walls x y)))
                        (->> walls
@@ -110,6 +115,8 @@
             first-path  (build-path first-empty empty-coords)]
         (reduce
           (fn [_ coord]
+            ; If the coordinate is not in `first-path`,
+            ;  then there are islands
             (if (get first-path coord)
               true
               (reduced false)))
@@ -124,4 +131,3 @@
      (let [walls (fill-chest-rooms game walls)]
        (paths-narrow? game walls))
      (paths-connected? game walls)))
-       )))
