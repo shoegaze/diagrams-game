@@ -3,9 +3,20 @@
 
 
 (defn- valid-forms? [game walls]
-  ; (dim game) = (dim walls)
-  ; every corr. mask-elem != :empty -> false? walls
-  false)
+  ; 1. dim game = dim walls
+  ; 2. Every corr. mask-elem != :empty -> wall = false
+  (let [mask      (:mask game)
+        dim-mask  (mat/get-dim mask)
+        dim-walls (mat/get-dim walls)
+        [w h] dim-mask]
+    (and (= dim-mask dim-walls)
+         (->> (for [y (range h)
+                    x (range w)
+                    :let [elem-mask (mat/get-elem mask x y)
+                          elem-wall (mat/get-elem walls x y)]
+                    :when (not= elem-mask :empty)]
+                (= elem-wall false))
+              (every? identity)))))
 
 (defn- walls-satisfied? [game walls]
   (let [h-hints (:h-hints game)
@@ -123,11 +134,11 @@
           empty-coords)))))
 
 (defn solved? [game walls]
-  (and true
-     ;(valid-forms? game walls)
-     (walls-satisfied? game walls)
-     (dead-ends-are-mobs? game walls)
-     (chests-in-rooms? game walls)
-     (let [walls (fill-chest-rooms game walls)]
-       (paths-narrow? game walls))
-     (paths-connected? game walls)))
+  (and (valid-forms? game walls)
+     ;(walls-satisfied? game walls)
+     ;(dead-ends-are-mobs? game walls)
+     ;(chests-in-rooms? game walls)
+     ;(let [walls (fill-chest-rooms game walls)]
+     ;  (paths-narrow? game walls))
+     ;(paths-connected? game walls)
+  ))
