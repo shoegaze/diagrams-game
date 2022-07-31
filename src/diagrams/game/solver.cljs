@@ -77,16 +77,58 @@
            (mat/has-pattern? walls x y wall-pattern))
          (every? not))))
 
-;(defn- paths-connected [game walls]
-;  false)
+(defn are-neighbors? [[x1 y1] [x2 y2]]
+  (let [dx (Math/abs (- x1 x2))
+        dy (Math/abs (- y1 y2))]
+    (= 1 (+ dx dy))))
+
+(defn build-path
+  ([root coords path]
+   (let [neighbors (->> coords
+                        (filter #(are-neighbors? root %))
+                        (filter #(nil? (get path %))))
+         path' (reduce conj path neighbors)]
+     (println "neighbors" neighbors)
+     (println "path'" path')
+     (if (empty? neighbors)
+       path'
+       (do
+         (println "> built path:" (reduce clojure.set/union path' neighbors))
+         (reduce (fn [path root]
+                   (clojure.set/union path (build-path root coords path)))
+                 path'
+                 neighbors)))))
+
+  ([root coords]
+   (build-path root coords #{root})))
+
+(defn paths-connected [_game walls]
+  (let [empty-coords (filter
+                       (fn [[x y]] (false? (mat/get-elem walls x y)))
+                       (->> walls
+                            (mat/to-coords)
+                            (mapcat identity)))]
+    (if (empty? empty-coords)
+      true
+      (let [first-empty (first empty-coords)
+            first-path  (build-path first-empty empty-coords)]
+        (reduce
+          (fn [_ coord]
+            (if (get first-path coord)
+              true
+              (do
+                (println "first-path" first-path)
+                (println "coord" coord)
+                (reduced false))))
+          empty-coords)))))
 
 (defn solved? [game walls]
   (and true
        ;(valid-forms? game walls)
-       (walls-satisfied? game walls)
-       (dead-ends-are-mobs game walls)
-       (chests-in-rooms? game walls)
+       ;(walls-satisfied? game walls)
+       ;(dead-ends-are-mobs game walls)
+       ;(chests-in-rooms? game walls)
        (let [walls (fill-chest-rooms game walls)]
-         (paths-narrow? game walls)
-       ;  ;(paths-connected game walls)
+         ;(paths-narrow? game walls)
+         (paths-connected game walls)
        )))
