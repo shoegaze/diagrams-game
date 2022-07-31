@@ -10,12 +10,14 @@
   (when (not (is-occupied? game x y))
     (swap! walls flip-elem x y)
     (swap! markers set-elem x y false))
+  (.preventDefault ev)
   false)
 
 (defn- on-right-click [ev game walls markers x y]
   (when (not (is-occupied? game x y))
     (swap! walls set-elem x y false)
     (swap! markers flip-elem x y))
+  (.preventDefault ev)
   false)
 
 (defn- get-img-src [mask-elem wall? marker?]

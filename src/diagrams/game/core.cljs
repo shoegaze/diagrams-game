@@ -30,6 +30,7 @@
     (not= elem :empty)))
 
 
+; DEBUG
 (def test-game (new-game [[:empty :empty :empty :empty :empty :empty :empty :empty]
                           [:empty :empty :empty :empty :empty :empty :empty :mob  ]
                           [:empty :empty :mob   :empty :empty :empty :empty :empty]
