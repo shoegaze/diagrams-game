@@ -36,11 +36,11 @@
 
 (defn- chest-room? [game walls x y]
   (if-not (mat/has-elem?
-            (mat/slice-chunk (:mask game) [x y] [3 3])
+            (mat/get-chunk (:mask game) [x y] [3 3])
             :chest)
     false
-    (let [h-walls (mat/slice-chunk walls [(- x 1) y] [5 3] true)
-          v-walls (mat/slice-chunk walls [x (- y 1)] [3 5] true)
+    (let [h-walls (mat/get-chunk walls [(- x 1) y] [5 3] true)
+          v-walls (mat/get-chunk walls [x (- y 1)] [3 5] true)
           h-count (mat/count-elem h-walls true)
           v-count (mat/count-elem v-walls true)
           sum     (+ h-count v-count)]
@@ -50,8 +50,6 @@
 (defn- chests-in-rooms? [game walls]
   (let [[w h]        (mat/get-dim walls)
         room-pattern (mat/new-matrix 3 3 :empty)]
-                      [false false false]
-                      [false false false]]]
       (->> (for [x (range w)
                  y (range h)]
              (if-not (mat/has-pattern? walls x y room-pattern)
@@ -59,24 +57,71 @@
                (chest-room? game walls x y)))
            (every? identity))))
 
-;(defn- paths-narrow? [game walls]
-;  ; Convolve 2x2 :empty
-;  (let [pattern [[:empty :empty]
-;                 [:empty :empty]]
-;        [w h]   (mat/get-dim game)]
-;    (for [x (range w)
-;          y (range h)]
-;      )))
+(defn- fill-chest-rooms [game walls]
+  (let [walls' (atom walls)
+        mask   (:mask game)
+        [w h]  (mat/get-dim mask)
+        wall-pattern (mat/new-matrix 3 3 true)]
+    (doseq [y (range h)
+            x (range w)
+            :when (chest-room? game @walls' x y)]
+      (swap! walls' mat/set-chunk x y wall-pattern))
+    @walls'))
 
-;(defn- paths-connected [game walls]
-;  false)
+(defn- paths-narrow? [game walls]
+  ; Convolve walls with 2x2 false matrix
+  (let [[w h]        (mat/get-dim (:mask game))
+        wall-pattern (mat/new-matrix 2 2 false)]
+    (->> (for [x (range w)
+               y (range h)]
+           (mat/has-pattern? walls x y wall-pattern))
+         (every? not))))
+
+(defn- are-neighbors? [[x1 y1] [x2 y2]]
+  (let [dx (Math/abs (- x1 x2))
+        dy (Math/abs (- y1 y2))]
+    (= 1 (+ dx dy))))
+
+(defn- build-path
+  ([root coords path]
+   (let [neighbors (->> coords
+                        (filter #(are-neighbors? root %))
+                        (filter #(nil? (get path %))))
+         path' (reduce conj path neighbors)]
+     (if (empty? neighbors)
+       path'
+       (reduce (fn [path root]
+                 (clojure.set/union path (build-path root coords path)))
+               path'
+               neighbors))))
+
+  ([root coords]
+   (build-path root coords #{root})))
+
+(defn- paths-connected? [_game walls]
+  (let [empty-coords (filter
+                       (fn [[x y]] (false? (mat/get-elem walls x y)))
+                       (->> walls
+                            (mat/to-coords)
+                            (mapcat identity)))]
+    (if (empty? empty-coords)
+      true
+      (let [first-empty (first empty-coords)
+            first-path  (build-path first-empty empty-coords)]
+        (reduce
+          (fn [_ coord]
+            (if (get first-path coord)
+              true
+              (reduced false)))
+          empty-coords)))))
 
 (defn solved? [game walls]
   (and true
        ;(valid-forms? game walls)
-       (walls-satisfied? game walls)
-       (dead-ends-are-mobs game walls)
-       (chests-in-rooms? game walls)
-       ;(paths-narrow? game walls)
-       ;(paths-connected game walls)
-       ))
+       ;(walls-satisfied? game walls)
+       ;(dead-ends-are-mobs game walls)
+       ;(chests-in-rooms? game walls)
+       (let [walls (fill-chest-rooms game walls)]
+         ;(paths-narrow? game walls)
+         (paths-connected? game walls)
+       )))
