@@ -1,0 +1,1 @@
+{:output-wrapper false, :externs ["closure-js/externs"], :libs ["closure-js/libs"], :output-to "resources/public/js/bundle/bundle.dev.js", :output-dir "resources/public/js/bundle", :optimizations :whitespace, :pretty-print true, :source-map "resources/public/js/bundle/bundle.dev.js.map"}
